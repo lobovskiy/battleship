@@ -2,11 +2,10 @@
   "name": "ws_task",
   "version": "1.0.0",
   "description": "The WebSocket remote control task created using the template by Andrei Auchynnikau https://github.com/kele6ra",
-  "main": "index.js",
-  "type": "module",
+  "main": "index.ts",
   "scripts": {
-    "start": "node ./index.js",
-    "start:dev": "nodemon ./index.js",
+    "start": "tsc && node ./dist/index.js",
+    "start:dev": "nodemon index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Artem Lobovskii",

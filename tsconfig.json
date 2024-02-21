@@ -12,6 +12,6 @@
     "noImplicitAny": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
+  "include": ["index.ts", "src"],
   "exclude": ["./front/**/*"]
 }
