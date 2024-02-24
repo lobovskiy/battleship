@@ -9,4 +9,16 @@ export class WsConnection implements IWsConnection {
     private ws: WebSocket,
     private server: WebSocketServer
   ) {}
+
+  public send(data: string) {
+    this.ws.send(data);
+  }
+
+  public broadcast(data: string) {
+    this.server.clients.forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(data);
+      }
+    });
+  }
 }

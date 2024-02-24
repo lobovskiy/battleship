@@ -3,7 +3,7 @@ import { IWsApp } from '../types';
 import { WsConnection } from './models/ws_connection';
 
 export class WsServer {
-  private server: WebSocketServer;
+  private readonly server: WebSocketServer;
 
   constructor(port: number) {
     this.server = new WebSocketServer({ port });
@@ -13,7 +13,7 @@ export class WsServer {
     this.server.on('connection', (ws) => {
       const wsConnection = new WsConnection(ws, this.server);
 
-      ws.on('message', (data) => app.handleWsMessage(data, wsConnection));
+      ws.on('message', (data) => app.handleClientMessage(data, wsConnection));
     });
   }
 }

@@ -1,11 +1,14 @@
 import WebSocket from 'ws';
+import { Actions } from './battleship/types';
 
 export interface IWsConnection {
   id: string;
+  send: (data: string) => void;
+  broadcast: (data: string) => void;
 }
 
 export interface IWsApp {
-  handleWsMessage: (
+  handleClientMessage: (
     data: WebSocket.RawData,
     wsConnection: IWsConnection
   ) => void;
