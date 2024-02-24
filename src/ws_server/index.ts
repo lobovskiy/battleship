@@ -1,19 +1,13 @@
-import { WebSocketServer } from 'ws';
-import { IWsApp } from '../types';
+import WebSocket, { WebSocketServer } from 'ws';
+import { IAppWsServer } from '../types';
 import { WsConnection } from './models/ws_connection';
 
-export class WsServer {
-  private readonly server: WebSocketServer;
-
+export class AppWsServer extends WebSocketServer implements IAppWsServer {
   constructor(port: number) {
-    this.server = new WebSocketServer({ port });
+    super({ port });
   }
 
-  public setConnectionHandlerApp(app: IWsApp) {
-    this.server.on('connection', (ws) => {
-      const wsConnection = new WsConnection(ws, this.server);
-
-      ws.on('message', (data) => app.handleClientMessage(data, wsConnection));
-    });
+  public createWsConnection(ws: WebSocket) {
+    return new WsConnection(ws);
   }
 }

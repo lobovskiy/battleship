@@ -3,7 +3,7 @@ export enum Actions {
   ServerError = 'server_error',
 }
 
-interface IClientUserData {
+export interface IClientUserData {
   name: string;
   password: string;
 }

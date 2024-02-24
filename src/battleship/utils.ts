@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
 import { BattleshipError, ServerError } from './models/errors';
-import { IWsConnection, WsMessage } from '../types';
+import { IWsConnection, AppWsMessage } from '../types';
 import {
   ClientMessageDataByAction,
   IServerErrorData,
@@ -9,10 +9,10 @@ import {
 
 export function parseWsMessageData(
   data: WebSocket.RawData
-): WsMessage<ClientMessageDataByAction> {
+): AppWsMessage<ClientMessageDataByAction> {
   const message = JSON.parse(
     data.toString()
-  ) as WsMessage<ClientMessageDataByAction>;
+  ) as AppWsMessage<ClientMessageDataByAction>;
 
   console.log('message received: ', message);
 
@@ -21,15 +21,12 @@ export function parseWsMessageData(
 
 export function sendServerMessage(
   payload: Omit<IServerMessageData, 'id'>,
-  wsConnection: IWsConnection,
-  broadcast?: boolean
+  wsConnection: IWsConnection
 ) {
   const messageData: IServerMessageData = { ...payload, id: 0 };
   const serverMessage = JSON.stringify(messageData);
 
-  broadcast
-    ? wsConnection.broadcast(serverMessage)
-    : wsConnection.send(serverMessage);
+  wsConnection.send(serverMessage);
 }
 
 export function getErrorData(message?: string): IServerErrorData {
