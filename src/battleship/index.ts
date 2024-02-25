@@ -1,10 +1,25 @@
 import WebSocket from 'ws';
 import { ServerError } from './models/errors';
+import AppController from './controllers/AppController';
+import UserController from './controllers/UserController';
+import RoomController from './controllers/RoomController';
 import { handleError, parseWsMessageData } from './utils';
 import { IAppWsServer, IWsApp, IWsConnection } from '../types';
+import { Actions } from './types';
 
 export class Battleship implements IWsApp {
-  constructor(public wsServer: IAppWsServer) {}
+  private controller: AppController;
+
+  constructor(public wsServer: IAppWsServer) {
+    const userController = new UserController();
+    const roomController = new RoomController();
+
+    this.controller = new AppController(
+      userController,
+      roomController,
+      wsServer
+    );
+  }
 
   listen() {
     this.wsServer.on('connection', (ws) => {
@@ -15,11 +30,16 @@ export class Battleship implements IWsApp {
   }
 
   handleClientMessage(data: WebSocket.RawData, wsConnection: IWsConnection) {
-    const message = parseWsMessageData(data);
-    const action = message.type;
-
     try {
+      const message = parseWsMessageData(data);
+      const { type: action, data: messageData } = message;
+
       switch (action) {
+        case Actions.Register:
+          this.controller.registerUser(messageData, wsConnection);
+
+          break;
+
         default:
           handleError(new ServerError('Unsupported action'), wsConnection);
       }

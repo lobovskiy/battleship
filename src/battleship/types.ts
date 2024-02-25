@@ -1,5 +1,7 @@
 export enum Actions {
   Register = 'reg',
+  UpdateRoom = 'update_room',
+  UpdateWinners = 'update_winners',
   ServerError = 'server_error',
 }
 

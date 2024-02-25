@@ -17,6 +17,12 @@ export interface IWsApp {
   ) => void;
 }
 
+export interface IWsMessage<T> {
+  id: number;
+  type: T;
+  data: string;
+}
+
 export type AppWsMessage<T> = {
   [K in keyof T]: {
     id: number;
