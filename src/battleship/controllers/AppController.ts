@@ -33,15 +33,21 @@ export default class AppController {
     sendServerMessage(payload, wsConnection);
   }
 
-  private updateRooms(wsConnection: IWsConnection) {
-    const payload = createMessagePayload(Actions.UpdateRooms, {});
+  public updateRooms() {
+    const payload = createMessagePayload(
+      Actions.UpdateRooms,
+      this.roomController.getRooms()
+    );
     const serverMessage = createServerMessage(payload);
 
     this.broadcast(serverMessage);
   }
 
-  private updateWinners(wsConnection: IWsConnection) {
-    const payload = createMessagePayload(Actions.UpdateWinners, {});
+  public updateWinners() {
+    const payload = createMessagePayload(
+      Actions.UpdateWinners,
+      this.userController.getWinners()
+    );
     const serverMessage = createServerMessage(payload);
 
     this.broadcast(serverMessage);

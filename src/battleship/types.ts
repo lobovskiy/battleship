@@ -25,7 +25,9 @@ export type MessagePayload = Omit<IWsMessage<Actions>, 'id'>;
 
 export interface IUser {
   id: number;
+  name: string;
   connectionId: string;
+  wins: number;
 }
 
 export interface IRoom {

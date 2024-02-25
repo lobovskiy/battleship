@@ -13,6 +13,13 @@ export default class UserController {
     );
   }
 
+  public getWinners() {
+    return this.users.map((user) => ({
+      name: user.name,
+      wins: user.wins,
+    }));
+  }
+
   private createNewUser(name: string, password: string, connectionId: string) {
     const id = this.lastId++;
     const newUser = new User(id, name, password, connectionId);

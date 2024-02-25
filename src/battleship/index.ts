@@ -28,6 +28,8 @@ export class Battleship implements IWsApp {
       switch (action) {
         case Actions.RegisterUser:
           this.controller.registerUser(messageData, wsConnection);
+          this.controller.updateRooms();
+          this.controller.updateWinners();
 
           break;
 
