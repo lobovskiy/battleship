@@ -6,36 +6,51 @@ import { GameUserNotFoundError } from '../models/errors';
 export default class Game implements IGame {
   private gameBoardsByUserId: Record<string, IGameBoard> = {};
 
+  public currentPlayerId: number;
+
   constructor(
     private player1: IUser,
     private player2: IUser
   ) {
+    this.currentPlayerId = player1.id;
     this.gameBoardsByUserId[player1.id] = new GameBoard();
     this.gameBoardsByUserId[player2.id] = new GameBoard();
   }
 
-  public addShips(shipDataset: IShipData[], userId: number) {
-    const userGameBoard = this.getGameBoardByUserId(userId);
-    const opponentGameBoard = this.getGameBoardByUserId(
-      this.getOpponentIdByUserId(userId)
+  public getPlayers() {
+    const { player1, player2 } = this;
+
+    return { player1, player2 };
+  }
+
+  public getPlayerShipsDataset(playerId: number) {
+    const playerGameBoard = this.getGameBoardByPlayerId(playerId);
+
+    return playerGameBoard.shipDataset;
+  }
+
+  public addShips(shipDataset: IShipData[], playerId: number) {
+    const playerGameBoard = this.getGameBoardByPlayerId(playerId);
+    const opponentGameBoard = this.getGameBoardByPlayerId(
+      this.getOpponentIdByPlayerId(playerId)
     );
 
-    userGameBoard.addShips(shipDataset);
+    playerGameBoard.addShips(shipDataset);
 
     return (
-      !!userGameBoard.shipDataset.length &&
+      !!playerGameBoard.shipDataset.length &&
       !!opponentGameBoard.shipDataset.length
     );
   }
 
-  private getGameBoardByUserId(userId: number) {
-    this.validateUserId(userId);
+  private getGameBoardByPlayerId(playerId: number) {
+    this.validatePlayerId(playerId);
 
-    return this.gameBoardsByUserId[String(userId)];
+    return this.gameBoardsByUserId[String(playerId)];
   }
 
-  private getOpponentIdByUserId(userId: number) {
-    this.validateUserId(userId);
+  private getOpponentIdByPlayerId(userId: number) {
+    this.validatePlayerId(userId);
 
     if (this.player1.id === userId) {
       return this.player2.id;
@@ -44,7 +59,7 @@ export default class Game implements IGame {
     }
   }
 
-  private validateUserId(userId: number) {
+  private validatePlayerId(userId: number) {
     if (this.player1.id !== userId && this.player2.id !== userId) {
       throw new GameUserNotFoundError();
     }

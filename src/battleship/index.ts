@@ -55,7 +55,9 @@ export class Battleship implements IWsApp {
             wsConnection
           );
 
-          console.log(canStartGame);
+          if (canStartGame) {
+            this.controller.startGame(messageData.gameId, wsConnection);
+          }
 
           break;
 

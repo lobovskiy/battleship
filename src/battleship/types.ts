@@ -8,6 +8,7 @@ export enum Actions {
   AddUserToRoom = 'add_user_to_room',
   CreateGame = 'create_game',
   AddShips = 'add_ships',
+  StartGame = 'start_game',
   ServerError = 'server_error',
 }
 
@@ -59,6 +60,11 @@ export interface IServerGameData {
   idPlayer: TIndex;
 }
 
+export interface IServerUserShipsDataset {
+  ships: IShipData[];
+  currentPlayerIndex: TIndex;
+}
+
 export type MessagePayload = Omit<IWsMessage<Actions>, 'id'>;
 
 export interface IUser {
@@ -71,6 +77,7 @@ export interface IUser {
 
 export interface IRoom {
   id: TIndex;
+  game: IGame | undefined;
   getUsers: () => IServerUserData[];
   addUser: (user: IUser) => IServerUserData[];
   initGame: () => void;
@@ -78,5 +85,8 @@ export interface IRoom {
 }
 
 export interface IGame {
+  currentPlayerId: TIndex;
+  getPlayers: () => { player1: IUser; player2: IUser };
+  getPlayerShipsDataset: (playerId: number) => IShipData[];
   addShips: (shipDataset: IShipData[], userId: number) => boolean;
 }

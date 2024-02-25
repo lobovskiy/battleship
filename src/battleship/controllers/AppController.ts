@@ -14,6 +14,7 @@ import {
   IClientUserData,
   IServerGameData,
   IServerUserData,
+  IServerUserShipsDataset,
   MessagePayload,
 } from '../types';
 
@@ -81,6 +82,48 @@ export default class AppController {
       user.id,
       data.gameId
     );
+  }
+
+  public startGame(roomId: number, wsConnection: IWsConnection) {
+    const currentPlayerIndex =
+      this.roomController.getRoomGameCurrentPlayerId(roomId);
+    const { player1, player2 } = this.roomController.getRoomGamePlayers(roomId);
+    const player1MessagePayloadData: IServerUserShipsDataset = {
+      ships: this.roomController.getRoomGamePlayerShipsDataset(
+        roomId,
+        player1.id
+      ),
+      currentPlayerIndex,
+    };
+    const player2MessagePayloadData: IServerUserShipsDataset = {
+      ships: this.roomController.getRoomGamePlayerShipsDataset(
+        roomId,
+        player2.id
+      ),
+      currentPlayerIndex,
+    };
+    const player1Payload = createMessagePayload(
+      Actions.StartGame,
+      player1MessagePayloadData
+    );
+    const player2Payload = createMessagePayload(
+      Actions.StartGame,
+      player2MessagePayloadData
+    );
+    const player1WsConnection = this.wsServer.findWsConnectionById(
+      player1.connectionId
+    );
+    const player2WsConnection = this.wsServer.findWsConnectionById(
+      player2.connectionId
+    );
+
+    if (player1WsConnection) {
+      sendServerMessage(player1Payload, player1WsConnection);
+    }
+
+    if (player2WsConnection) {
+      sendServerMessage(player2Payload, player2WsConnection);
+    }
   }
 
   public updateRooms() {

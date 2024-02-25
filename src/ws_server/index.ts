@@ -3,11 +3,21 @@ import { IAppWsServer } from '../types';
 import { WsConnection } from './models/WsConnection';
 
 export class AppWsServer extends WebSocketServer implements IAppWsServer {
+  private wsConnections: WsConnection[] = [];
+
   constructor(port: number) {
     super({ port });
   }
 
   public createWsConnection(ws: WebSocket) {
-    return new WsConnection(ws);
+    const wsConnection = new WsConnection(ws);
+
+    this.wsConnections.push(wsConnection);
+
+    return wsConnection;
+  }
+
+  public findWsConnectionById(id: string) {
+    return this.wsConnections.find((wsConnection) => wsConnection.id === id);
   }
 }

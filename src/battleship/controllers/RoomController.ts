@@ -1,6 +1,6 @@
 import { IRoom, IShipData, IUser } from '../types';
 import { Room } from '../models/Room';
-import { RoomNotFoundError } from '../models/errors';
+import { GameNotFoundError, RoomNotFoundError } from '../models/errors';
 
 export default class RoomController {
   private rooms: IRoom[] = [];
@@ -45,6 +45,24 @@ export default class RoomController {
     return room.addUserShips(shipDataset, userId);
   }
 
+  public getRoomGameCurrentPlayerId(roomId: number) {
+    const game = this.getRoomGameByRoomId(roomId);
+
+    return game.currentPlayerId;
+  }
+
+  public getRoomGamePlayers(roomId: number) {
+    const game = this.getRoomGameByRoomId(roomId);
+
+    return game.getPlayers();
+  }
+
+  public getRoomGamePlayerShipsDataset(roomId: number, userId: number) {
+    const game = this.getRoomGameByRoomId(roomId);
+
+    return game.getPlayerShipsDataset(userId);
+  }
+
   private getRoomById(id: number) {
     const room = this.rooms.find((room) => room.id === id);
 
@@ -53,5 +71,15 @@ export default class RoomController {
     }
 
     return room;
+  }
+
+  private getRoomGameByRoomId(id: number) {
+    const { game } = this.getRoomById(id);
+
+    if (!game) {
+      throw new GameNotFoundError();
+    }
+
+    return game;
   }
 }
