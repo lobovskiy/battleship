@@ -1,8 +1,8 @@
-import { IUser } from '../types';
+import { IGame, IUser } from '../types';
 import { IGameBoard } from './types';
 import GameBoard from './models/GameBoard';
 
-export default class Game {
+export default class Game implements IGame {
   private gameBoardsByUserId: Record<number, IGameBoard> = {};
 
   constructor(

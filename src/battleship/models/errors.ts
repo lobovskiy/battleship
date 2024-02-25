@@ -23,9 +23,15 @@ export class RoomNotFoundError extends BattleshipError {
   }
 }
 
-export class RoomUserQtyError extends BattleshipError {
+export class RoomLimitUsersError extends BattleshipError {
   constructor() {
     super(Actions.ServerError, 'Cannot add more than 2 users in a room');
+  }
+}
+
+export class RoomUserQtyError extends BattleshipError {
+  constructor() {
+    super(Actions.ServerError, 'Invalid quantity of users in a room');
   }
 }
 

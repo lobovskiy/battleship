@@ -14,6 +14,10 @@ export default class RoomController {
     }));
   }
 
+  public findRoomById(id: number) {
+    return this.rooms.find((room) => room.id === id);
+  }
+
   public addNewRoom(user?: IUser): IRoom {
     const id = this.lastId++;
     const room = new Room(id, user);

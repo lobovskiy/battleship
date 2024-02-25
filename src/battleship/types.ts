@@ -6,6 +6,7 @@ export enum Actions {
   UpdateWinners = 'update_winners',
   CreateRoom = 'create_room',
   AddUserToRoom = 'add_user_to_room',
+  CreateGame = 'create_game',
   ServerError = 'server_error',
 }
 
@@ -33,7 +34,12 @@ export interface IServerErrorData {
 
 export interface IServerUserData {
   name: string;
-  index: number;
+  index: TIndex;
+}
+
+export interface IServerGameData {
+  idGame: TIndex;
+  idPlayer: TIndex;
 }
 
 export type MessagePayload = Omit<IWsMessage<Actions>, 'id'>;
@@ -50,4 +56,7 @@ export interface IRoom {
   id: TIndex;
   getUsers: () => IServerUserData[];
   addUser: (user: IUser) => IServerUserData[];
+  initGame: () => void;
 }
+
+export interface IGame {}

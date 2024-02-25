@@ -44,7 +44,9 @@ export class Battleship implements IWsApp {
           );
           this.controller.updateRooms();
 
-          console.log(roomUsers.length);
+          if (roomUsers.length === 2) {
+            this.controller.createGame(messageData.indexRoom, wsConnection);
+          }
 
           break;
 

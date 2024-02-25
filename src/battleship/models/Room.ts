@@ -1,8 +1,11 @@
-import { IRoom, IServerUserData, IUser } from '../types';
-import { RoomUserQtyError } from './errors';
+import { IGame, IRoom, IServerUserData, IUser } from '../types';
+import { RoomLimitUsersError, RoomUserQtyError } from './errors';
+import Game from '../game';
 
 export class Room implements IRoom {
   private users: IUser[] = [];
+
+  public game: IGame | undefined;
 
   constructor(
     public id: number,
@@ -22,7 +25,7 @@ export class Room implements IRoom {
 
   public addUser(user: IUser): IServerUserData[] {
     if (this.users.length >= 2) {
-      throw new RoomUserQtyError();
+      throw new RoomLimitUsersError();
     }
 
     if (!this.users.some((roomUser) => roomUser === user)) {
@@ -30,5 +33,13 @@ export class Room implements IRoom {
     }
 
     return this.getUsers();
+  }
+
+  public initGame() {
+    if (this.users.length !== 2) {
+      throw new RoomUserQtyError();
+    }
+
+    this.game = new Game(this.users[0], this.users[1]);
   }
 }

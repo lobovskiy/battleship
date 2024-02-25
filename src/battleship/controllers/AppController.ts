@@ -7,8 +7,14 @@ import {
   sendServerMessage,
 } from '../utils';
 import { IAppWsServer, IWsConnection } from '../../types';
-import { Actions, IClientRoomData, IClientUserData } from '../types';
-import { UserNotFoundError } from '../models/errors';
+import {
+  Actions,
+  IClientRoomData,
+  IClientUserData,
+  IServerGameData,
+  IServerUserData,
+} from '../types';
+import { RoomNotFoundError, UserNotFoundError } from '../models/errors';
 
 export default class AppController {
   private userController: UserController;
@@ -26,10 +32,14 @@ export default class AppController {
       data.password,
       wsConnection.id
     );
-    const payload = createMessagePayload(Actions.RegisterUser, {
+    const messagePayloadData: IServerUserData = {
       name: user.name,
       index: user.id,
-    });
+    };
+    const payload = createMessagePayload(
+      Actions.RegisterUser,
+      messagePayloadData
+    );
 
     sendServerMessage(payload, wsConnection);
   }
@@ -48,6 +58,33 @@ export default class AppController {
     }
 
     return this.roomController.addUserToRoom(user, data.indexRoom);
+  }
+
+  public createGame(roomId: number, wsConnection: IWsConnection) {
+    const user = this.userController.findUserByConnectionId(wsConnection.id);
+    const room = this.roomController.findRoomById(roomId);
+
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    if (!room) {
+      throw new RoomNotFoundError();
+    }
+
+    room.initGame();
+
+    const messagePayloadData: IServerGameData = {
+      idGame: roomId,
+      idPlayer: user.id,
+    };
+    const payload = createMessagePayload(
+      Actions.CreateGame,
+      messagePayloadData
+    );
+    const serverMessage = createServerMessage(payload);
+
+    this.broadcast(serverMessage);
   }
 
   public updateRooms() {
