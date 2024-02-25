@@ -14,7 +14,7 @@ export default class RoomController {
     }));
   }
 
-  public addRoom(user?: IUser): IRoom {
+  public addNewRoom(user?: IUser): IRoom {
     const id = this.lastId++;
     const room = new Room(id, user);
 

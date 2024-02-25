@@ -10,7 +10,7 @@ export default class UserController {
     return (
       this.users.find(
         (user) => user.name === name && user.password === password
-      ) || this.addUser(name, password, connectionId)
+      ) || this.addNewUser(name, password, connectionId)
     );
   }
 
@@ -25,7 +25,11 @@ export default class UserController {
     return this.users.find((user) => user.connectionId === connectionId);
   }
 
-  private addUser(name: string, password: string, connectionId: string): IUser {
+  private addNewUser(
+    name: string,
+    password: string,
+    connectionId: string
+  ): IUser {
     const id = this.lastId++;
     const user = new User(id, name, password, connectionId);
 

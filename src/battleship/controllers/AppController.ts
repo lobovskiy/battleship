@@ -37,7 +37,7 @@ export default class AppController {
   public createRoom(wsConnection: IWsConnection) {
     const user = this.userController.findUserByConnectionId(wsConnection.id);
 
-    this.roomController.addRoom(user);
+    this.roomController.addNewRoom(user);
   }
 
   public addUserToRoom(data: IClientRoomData, wsConnection: IWsConnection) {
