@@ -1,3 +1,5 @@
+import { IWsMessage } from '../types';
+
 export enum Actions {
   Register = 'reg',
   UpdateRoom = 'update_room',
@@ -19,8 +21,4 @@ export interface IServerErrorData {
   errorText?: string;
 }
 
-export interface IServerMessageData {
-  id: number;
-  type: Actions;
-  data: string;
-}
+export type MessagePayload = Omit<IWsMessage<Actions>, 'id'>;

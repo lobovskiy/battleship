@@ -3,7 +3,7 @@ import UserController from './UserController';
 import RoomController from './RoomController';
 import { getServerMessageFromPayload, sendServerMessage } from '../utils';
 import { IAppWsServer, IWsConnection } from '../../types';
-import { Actions, IClientUserData, IServerMessageData } from '../types';
+import { Actions, IClientUserData, MessagePayload } from '../types';
 
 export default class AppController {
   constructor(
@@ -19,7 +19,7 @@ export default class AppController {
       wsConnection.id
     );
     const payloadData = { name: user.name, index: user.id };
-    const payload: Omit<IServerMessageData, 'id'> = {
+    const payload: MessagePayload = {
       type: Actions.Register,
       data: JSON.stringify(payloadData),
     };
@@ -28,7 +28,7 @@ export default class AppController {
   }
 
   private updateRooms(wsConnection: IWsConnection) {
-    const payload: Omit<IServerMessageData, 'id'> = {
+    const payload: MessagePayload = {
       type: Actions.UpdateRoom,
       data: JSON.stringify(''),
     };
@@ -38,7 +38,7 @@ export default class AppController {
   }
 
   private updateWinners(wsConnection: IWsConnection) {
-    const payload: Omit<IServerMessageData, 'id'> = {
+    const payload: MessagePayload = {
       type: Actions.UpdateWinners,
       data: JSON.stringify(''),
     };

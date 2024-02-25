@@ -5,7 +5,7 @@ import {
   Actions,
   ClientMessageDataByAction,
   IServerErrorData,
-  IServerMessageData,
+  MessagePayload,
 } from './types';
 
 export function parseWsMessageData(
@@ -21,16 +21,14 @@ export function parseWsMessageData(
   } as AppWsMessage<ClientMessageDataByAction>;
 }
 
-export function getServerMessageFromPayload(
-  payload: Omit<IServerMessageData, 'id'>
-) {
-  const messageData: IServerMessageData = { ...payload, id: 0 };
+export function getServerMessageFromPayload(payload: MessagePayload) {
+  const message: IWsMessage<Actions> = { ...payload, id: 0 };
 
-  return JSON.stringify(messageData);
+  return JSON.stringify(message);
 }
 
 export function sendServerMessage(
-  payload: Omit<IServerMessageData, 'id'>,
+  payload: MessagePayload,
   wsConnection: IWsConnection
 ) {
   const serverMessage = getServerMessageFromPayload(payload);
@@ -43,7 +41,7 @@ export function getErrorData(message?: string): IServerErrorData {
 }
 
 export function handleError(error: unknown, wsConnection: IWsConnection) {
-  let payload: Omit<IServerMessageData, 'id'>;
+  let payload: MessagePayload;
 
   if (error instanceof BattleshipError) {
     const errorData = getErrorData(error.message);
