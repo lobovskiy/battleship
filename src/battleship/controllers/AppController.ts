@@ -61,17 +61,27 @@ export default class AppController {
   public createGame(roomId: number, wsConnection: IWsConnection) {
     this.roomController.createGame(roomId);
 
-    const user = this.userController.getUserByConnectionId(wsConnection.id);
-    const messagePayloadData: IServerGameData = {
+    const { player1, player2 } = this.roomController.getRoomGamePlayers(roomId);
+
+    const player1MessagePayloadData: IServerGameData = {
       idGame: roomId,
-      idPlayer: user.id,
+      idPlayer: player1.id,
     };
-    const payload = createMessagePayload(
+    const player2MessagePayloadData: IServerGameData = {
+      idGame: roomId,
+      idPlayer: player2.id,
+    };
+
+    const player1Payload = createMessagePayload(
       Actions.CreateGame,
-      messagePayloadData
+      player1MessagePayloadData
+    );
+    const player2Payload = createMessagePayload(
+      Actions.CreateGame,
+      player2MessagePayloadData
     );
 
-    this.broadcast(payload);
+    this.sendMessagesToRoomGamePlayers(player1Payload, player2Payload, roomId);
   }
 
   public addShips(data: IClientShipDataset, wsConnection: IWsConnection) {
@@ -84,10 +94,11 @@ export default class AppController {
     );
   }
 
-  public startGame(roomId: number, wsConnection: IWsConnection) {
+  public startGame(roomId: number) {
+    const { player1, player2 } = this.roomController.getRoomGamePlayers(roomId);
     const currentPlayerIndex =
       this.roomController.getRoomGameCurrentPlayerId(roomId);
-    const { player1, player2 } = this.roomController.getRoomGamePlayers(roomId);
+
     const player1MessagePayloadData: IServerUserShipsDataset = {
       ships: this.roomController.getRoomGamePlayerShipsDataset(
         roomId,
@@ -102,6 +113,7 @@ export default class AppController {
       ),
       currentPlayerIndex,
     };
+
     const player1Payload = createMessagePayload(
       Actions.StartGame,
       player1MessagePayloadData
@@ -110,20 +122,8 @@ export default class AppController {
       Actions.StartGame,
       player2MessagePayloadData
     );
-    const player1WsConnection = this.wsServer.findWsConnectionById(
-      player1.connectionId
-    );
-    const player2WsConnection = this.wsServer.findWsConnectionById(
-      player2.connectionId
-    );
 
-    if (player1WsConnection) {
-      sendServerMessage(player1Payload, player1WsConnection);
-    }
-
-    if (player2WsConnection) {
-      sendServerMessage(player2Payload, player2WsConnection);
-    }
+    this.sendMessagesToRoomGamePlayers(player1Payload, player2Payload, roomId);
   }
 
   public updateRooms() {
@@ -142,6 +142,28 @@ export default class AppController {
     );
 
     this.broadcast(payload);
+  }
+
+  private sendMessagesToRoomGamePlayers(
+    player1Payload: MessagePayload,
+    player2Payload: MessagePayload,
+    roomId: number
+  ) {
+    const { player1, player2 } = this.roomController.getRoomGamePlayers(roomId);
+    const player1WsConnection = this.wsServer.findWsConnectionById(
+      player1.connectionId
+    );
+    const player2WsConnection = this.wsServer.findWsConnectionById(
+      player2.connectionId
+    );
+
+    if (player1WsConnection) {
+      sendServerMessage(player1Payload, player1WsConnection);
+    }
+
+    if (player2WsConnection) {
+      sendServerMessage(player2Payload, player2WsConnection);
+    }
   }
 
   private broadcast(messagePayload: MessagePayload) {

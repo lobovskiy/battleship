@@ -56,7 +56,7 @@ export class Battleship implements IWsApp {
           );
 
           if (canStartGame) {
-            this.controller.startGame(messageData.gameId, wsConnection);
+            this.controller.startGame(messageData.gameId);
           }
 
           break;
