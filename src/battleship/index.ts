@@ -49,6 +49,15 @@ export class Battleship implements IWsApp {
           }
 
           break;
+        case Actions.AddShips:
+          const canStartGame = this.controller.addShips(
+            messageData,
+            wsConnection
+          );
+
+          console.log(canStartGame);
+
+          break;
 
         default:
           handleError(new ServerError('Unsupported action'), wsConnection);

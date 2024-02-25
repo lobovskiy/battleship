@@ -10,11 +10,12 @@ import { IAppWsServer, IWsConnection } from '../../types';
 import {
   Actions,
   IClientRoomData,
+  IClientShipDataset,
   IClientUserData,
   IServerGameData,
   IServerUserData,
+  MessagePayload,
 } from '../types';
-import { RoomNotFoundError, UserNotFoundError } from '../models/errors';
 
 export default class AppController {
   private userController: UserController;
@@ -45,35 +46,21 @@ export default class AppController {
   }
 
   public createRoom(wsConnection: IWsConnection) {
-    const user = this.userController.findUserByConnectionId(wsConnection.id);
+    const user = this.userController.getUserByConnectionId(wsConnection.id);
 
     this.roomController.addNewRoom(user);
   }
 
   public addUserToRoom(data: IClientRoomData, wsConnection: IWsConnection) {
-    const user = this.userController.findUserByConnectionId(wsConnection.id);
-
-    if (!user) {
-      throw new UserNotFoundError();
-    }
+    const user = this.userController.getUserByConnectionId(wsConnection.id);
 
     return this.roomController.addUserToRoom(user, data.indexRoom);
   }
 
   public createGame(roomId: number, wsConnection: IWsConnection) {
-    const user = this.userController.findUserByConnectionId(wsConnection.id);
-    const room = this.roomController.findRoomById(roomId);
+    this.roomController.createGame(roomId);
 
-    if (!user) {
-      throw new UserNotFoundError();
-    }
-
-    if (!room) {
-      throw new RoomNotFoundError();
-    }
-
-    room.initGame();
-
+    const user = this.userController.getUserByConnectionId(wsConnection.id);
     const messagePayloadData: IServerGameData = {
       idGame: roomId,
       idPlayer: user.id,
@@ -82,9 +69,18 @@ export default class AppController {
       Actions.CreateGame,
       messagePayloadData
     );
-    const serverMessage = createServerMessage(payload);
 
-    this.broadcast(serverMessage);
+    this.broadcast(payload);
+  }
+
+  public addShips(data: IClientShipDataset, wsConnection: IWsConnection) {
+    const user = this.userController.getUserByConnectionId(wsConnection.id);
+
+    return this.roomController.addUserShipsToRoom(
+      data.ships,
+      user.id,
+      data.gameId
+    );
   }
 
   public updateRooms() {
@@ -92,9 +88,8 @@ export default class AppController {
       Actions.UpdateRooms,
       this.roomController.getRooms()
     );
-    const serverMessage = createServerMessage(payload);
 
-    this.broadcast(serverMessage);
+    this.broadcast(payload);
   }
 
   public updateWinners() {
@@ -102,15 +97,16 @@ export default class AppController {
       Actions.UpdateWinners,
       this.userController.getWinners()
     );
-    const serverMessage = createServerMessage(payload);
 
-    this.broadcast(serverMessage);
+    this.broadcast(payload);
   }
 
-  private broadcast(data: string) {
+  private broadcast(messagePayload: MessagePayload) {
+    const serverMessage = createServerMessage(messagePayload);
+
     this.wsServer.clients.forEach((ws) => {
       if (ws.readyState === WebSocket.OPEN) {
-        ws.send(data);
+        ws.send(serverMessage);
       }
     });
   }

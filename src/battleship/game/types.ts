@@ -1,3 +1,5 @@
+import { IShipData } from '../types';
+
 export enum Cell {
   Clear,
   Beaten,
@@ -8,16 +10,6 @@ export enum AttackResult {
   Killed = 'killed',
   Shot = 'shot',
   Error = 'error',
-}
-
-export interface IShipData {
-  position: {
-    x: number;
-    y: number;
-  };
-  direction: boolean;
-  type: 'small' | 'medium' | 'large' | 'huge';
-  length: number;
 }
 
 export type ShipCoords = {
@@ -31,6 +23,7 @@ export interface IShip {
 }
 
 export interface IGameBoard {
+  shipDataset: IShipData[];
   addShips: (shipDataset: IShipData[]) => void;
   attack: (x: number, y: number) => void;
 }

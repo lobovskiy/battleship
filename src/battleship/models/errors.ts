@@ -35,6 +35,27 @@ export class RoomUserQtyError extends BattleshipError {
   }
 }
 
+export class GameNotFoundError extends BattleshipError {
+  constructor() {
+    super(
+      Actions.ServerError,
+      'Game with current user not found or not created yet'
+    );
+  }
+}
+
+export class GameBoardNotFoundError extends BattleshipError {
+  constructor() {
+    super(Actions.ServerError, "Current user's game board not found");
+  }
+}
+
+export class GameUserNotFoundError extends BattleshipError {
+  constructor() {
+    super(Actions.ServerError, 'User not found in current game');
+  }
+}
+
 export class ServerError extends BattleshipError {
   constructor(message?: string) {
     super(Actions.ServerError, message);

@@ -7,6 +7,7 @@ export enum Actions {
   CreateRoom = 'create_room',
   AddUserToRoom = 'add_user_to_room',
   CreateGame = 'create_game',
+  AddShips = 'add_ships',
   ServerError = 'server_error',
 }
 
@@ -21,10 +22,26 @@ export interface IClientRoomData {
   indexRoom: TIndex;
 }
 
+export interface IShipData {
+  position: {
+    x: number;
+    y: number;
+  };
+  direction: boolean;
+  type: 'small' | 'medium' | 'large' | 'huge';
+  length: number;
+}
+
+export interface IClientShipDataset {
+  gameId: number;
+  ships: IShipData[];
+}
+
 export type ClientMessageDataByAction = {
   [Actions.RegisterUser]: IClientUserData;
   [Actions.CreateRoom]: null;
   [Actions.AddUserToRoom]: IClientRoomData;
+  [Actions.AddShips]: IClientShipDataset;
 };
 
 export interface IServerErrorData {
@@ -57,6 +74,9 @@ export interface IRoom {
   getUsers: () => IServerUserData[];
   addUser: (user: IUser) => IServerUserData[];
   initGame: () => void;
+  addUserShips: (shipDataset: IShipData[], userId: number) => boolean;
 }
 
-export interface IGame {}
+export interface IGame {
+  addShips: (shipDataset: IShipData[], userId: number) => boolean;
+}

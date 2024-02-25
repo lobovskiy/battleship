@@ -1,4 +1,5 @@
-import { AttackResult, IShip, IShipData, ShipCoords } from '../types';
+import { IShipData } from '../../types';
+import { AttackResult, IShip, ShipCoords } from '../types';
 
 export default class Ship implements IShip {
   position: ShipCoords[] = [];

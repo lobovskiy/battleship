@@ -1,13 +1,14 @@
-import { Cell, IGameBoard, IShip, IShipData } from '../types';
-import { createCellMatrix } from '../utils';
 import Ship from './Ship';
+import { createCellMatrix } from '../utils';
+import { IShipData } from '../../types';
+import { Cell, IGameBoard, IShip } from '../types';
 
 export default class GameBoard implements IGameBoard {
   private field: Cell[][] = createCellMatrix(10, Cell.Clear);
 
-  private shipDataset: IShipData[] = [];
-
   private ships: IShip[] = [];
+
+  public shipDataset: IShipData[] = [];
 
   public addShips(shipDataset: IShipData[]) {
     this.shipDataset = shipDataset;

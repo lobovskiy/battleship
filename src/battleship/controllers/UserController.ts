@@ -1,5 +1,6 @@
 import User from '../models/User';
 import { IUser } from '../types';
+import { UserNotFoundError } from '../models/errors';
 
 export default class UserController {
   private users: IUser[] = [];
@@ -21,8 +22,14 @@ export default class UserController {
     }));
   }
 
-  public findUserByConnectionId(connectionId: string): IUser | undefined {
-    return this.users.find((user) => user.connectionId === connectionId);
+  public getUserByConnectionId(connectionId: string) {
+    const user = this.users.find((user) => user.connectionId === connectionId);
+
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    return user;
   }
 
   private addNewUser(

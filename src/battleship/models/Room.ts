@@ -1,5 +1,9 @@
-import { IGame, IRoom, IServerUserData, IUser } from '../types';
-import { RoomLimitUsersError, RoomUserQtyError } from './errors';
+import { IGame, IRoom, IServerUserData, IShipData, IUser } from '../types';
+import {
+  GameNotFoundError,
+  RoomLimitUsersError,
+  RoomUserQtyError,
+} from './errors';
 import Game from '../game';
 
 export class Room implements IRoom {
@@ -41,5 +45,13 @@ export class Room implements IRoom {
     }
 
     this.game = new Game(this.users[0], this.users[1]);
+  }
+
+  public addUserShips(shipDataset: IShipData[], userId: number) {
+    if (!this.game) {
+      throw new GameNotFoundError();
+    }
+
+    return this.game.addShips(shipDataset, userId);
   }
 }

@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '../types';
+import { IRoom, IShipData, IUser } from '../types';
 import { Room } from '../models/Room';
 import { RoomNotFoundError } from '../models/errors';
 
@@ -14,11 +14,7 @@ export default class RoomController {
     }));
   }
 
-  public findRoomById(id: number) {
-    return this.rooms.find((room) => room.id === id);
-  }
-
-  public addNewRoom(user?: IUser): IRoom {
+  public addNewRoom(user: IUser): IRoom {
     const id = this.lastId++;
     const room = new Room(id, user);
 
@@ -27,13 +23,35 @@ export default class RoomController {
     return room;
   }
 
+  public createGame(roomId: number) {
+    const room = this.getRoomById(roomId);
+
+    room.initGame();
+  }
+
   public addUserToRoom(user: IUser, roomId: number) {
-    const room = this.rooms.find((room) => room.id === roomId);
+    const room = this.getRoomById(roomId);
+
+    return room.addUser(user);
+  }
+
+  public addUserShipsToRoom(
+    shipDataset: IShipData[],
+    userId: number,
+    roomId: number
+  ) {
+    const room = this.getRoomById(roomId);
+
+    return room.addUserShips(shipDataset, userId);
+  }
+
+  private getRoomById(id: number) {
+    const room = this.rooms.find((room) => room.id === id);
 
     if (!room) {
       throw new RoomNotFoundError();
     }
 
-    return room.addUser(user);
+    return room;
   }
 }
