@@ -1,8 +1,8 @@
 import { IWsMessage } from '../types';
 
 export enum Actions {
-  Register = 'reg',
-  UpdateRoom = 'update_room',
+  RegisterUser = 'reg',
+  UpdateRooms = 'update_room',
   UpdateWinners = 'update_winners',
   ServerError = 'server_error',
 }
@@ -13,7 +13,7 @@ export interface IClientUserData {
 }
 
 export type ClientMessageDataByAction = {
-  [Actions.Register]: IClientUserData;
+  [Actions.RegisterUser]: IClientUserData;
 };
 
 export interface IServerErrorData {

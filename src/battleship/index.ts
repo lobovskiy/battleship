@@ -26,7 +26,7 @@ export class Battleship implements IWsApp {
       const { type: action, data: messageData } = message;
 
       switch (action) {
-        case Actions.Register:
+        case Actions.RegisterUser:
           this.controller.registerUser(messageData, wsConnection);
 
           break;

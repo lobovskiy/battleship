@@ -1,7 +1,11 @@
 import WebSocket from 'ws';
 import UserController from './UserController';
 import RoomController from './RoomController';
-import { getServerMessageFromPayload, sendServerMessage } from '../utils';
+import {
+  createMessagePayload,
+  createServerMessage,
+  sendServerMessage,
+} from '../utils';
 import { IAppWsServer, IWsConnection } from '../../types';
 import { Actions, IClientUserData, MessagePayload } from '../types';
 
@@ -21,31 +25,24 @@ export default class AppController {
       data.password,
       wsConnection.id
     );
-    const payloadData = { name: user.name, index: user.id };
-    const payload: MessagePayload = {
-      type: Actions.Register,
-      data: JSON.stringify(payloadData),
-    };
+    const payload: MessagePayload = createMessagePayload(Actions.RegisterUser, {
+      name: user.name,
+      index: user.id,
+    });
 
     sendServerMessage(payload, wsConnection);
   }
 
   private updateRooms(wsConnection: IWsConnection) {
-    const payload: MessagePayload = {
-      type: Actions.UpdateRoom,
-      data: JSON.stringify(''),
-    };
-    const serverMessage = getServerMessageFromPayload(payload);
+    const payload = createMessagePayload(Actions.UpdateRooms, {});
+    const serverMessage = createServerMessage(payload);
 
     this.broadcast(serverMessage);
   }
 
   private updateWinners(wsConnection: IWsConnection) {
-    const payload: MessagePayload = {
-      type: Actions.UpdateWinners,
-      data: JSON.stringify(''),
-    };
-    const serverMessage = getServerMessageFromPayload(payload);
+    const payload = createMessagePayload(Actions.UpdateWinners, {});
+    const serverMessage = createServerMessage(payload);
 
     this.broadcast(serverMessage);
   }

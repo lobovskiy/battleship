@@ -21,7 +21,14 @@ export function parseWsMessageData(
   } as AppWsMessage<ClientMessageDataByAction>;
 }
 
-export function getServerMessageFromPayload(payload: MessagePayload) {
+export function createMessagePayload(
+  type: Actions,
+  data: object
+): MessagePayload {
+  return { type, data: JSON.stringify(data) };
+}
+
+export function createServerMessage(payload: MessagePayload) {
   const message: IWsMessage<Actions> = { ...payload, id: 0 };
 
   return JSON.stringify(message);
@@ -31,7 +38,7 @@ export function sendServerMessage(
   payload: MessagePayload,
   wsConnection: IWsConnection
 ) {
-  const serverMessage = getServerMessageFromPayload(payload);
+  const serverMessage = createServerMessage(payload);
 
   wsConnection.send(serverMessage);
 }
@@ -46,20 +53,14 @@ export function handleError(error: unknown, wsConnection: IWsConnection) {
   if (error instanceof BattleshipError) {
     const errorData = getErrorData(error.message);
 
-    payload = {
-      type: error.action,
-      data: JSON.stringify(errorData),
-    };
+    payload = createMessagePayload(error.action, errorData);
   } else {
     const errorMessage =
       error instanceof Error ? error.message : 'Internal server error';
     const serverError = new ServerError(errorMessage);
     const errorData = getErrorData(serverError.message);
 
-    payload = {
-      type: serverError.action,
-      data: JSON.stringify(errorData),
-    };
+    payload = createMessagePayload(serverError.action, errorData);
   }
 
   sendServerMessage(payload, wsConnection);
