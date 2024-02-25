@@ -1,4 +1,6 @@
-export default class User {
+import { IUser } from '../types';
+
+export default class User implements IUser {
   constructor(
     public id: number,
     public name: string,

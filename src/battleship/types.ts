@@ -22,3 +22,13 @@ export interface IServerErrorData {
 }
 
 export type MessagePayload = Omit<IWsMessage<Actions>, 'id'>;
+
+export interface IUser {
+  id: number;
+  connectionId: string;
+}
+
+export interface IRoom {
+  id: number;
+  users: IUser[];
+}

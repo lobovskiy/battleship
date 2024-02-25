@@ -3,5 +3,5 @@ import User from '../models/User';
 export default class RoomController {
   private rooms: User[] = [];
 
-  private lastId = 0;
+  private lastId = 1;
 }

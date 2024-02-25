@@ -1,8 +1,8 @@
-import User from './User';
+import { IRoom, IUser } from '../types';
 
-export class Room {
+export class Room implements IRoom {
   constructor(
     public id: number,
-    public users: User[]
+    public users: IUser[]
   ) {}
 }
