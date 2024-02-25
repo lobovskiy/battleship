@@ -60,6 +60,10 @@ export class Battleship implements IWsApp {
           }
 
           break;
+        case Actions.Attack:
+          this.controller.attack(messageData);
+
+          break;
 
         default:
           handleError(new ServerError('Unsupported action'), wsConnection);

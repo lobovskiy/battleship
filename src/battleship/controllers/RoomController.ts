@@ -1,4 +1,4 @@
-import { IRoom, IShipData, IUser } from '../types';
+import { IClientAttackData, IRoom, IShipData, IUser } from '../types';
 import { Room } from '../models/Room';
 import { GameNotFoundError, RoomNotFoundError } from '../models/errors';
 
@@ -59,8 +59,16 @@ export default class RoomController {
 
   public getRoomGamePlayerShipsDataset(roomId: number, userId: number) {
     const game = this.getRoomGameByRoomId(roomId);
+    const gameBoard = game.getPlayerGameBoard(userId);
 
-    return game.getPlayerShipsDataset(userId);
+    return gameBoard.shipDataset;
+  }
+
+  public gameAttack(data: IClientAttackData) {
+    const { gameId, indexPlayer, x, y } = data;
+    const game = this.getRoomGameByRoomId(gameId);
+
+    return game.attack(indexPlayer, x, y);
   }
 
   private getRoomById(id: number) {

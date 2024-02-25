@@ -9,10 +9,14 @@ import {
 import { IAppWsServer, IWsConnection } from '../../types';
 import {
   Actions,
+  AttackResult,
+  IClientAttackData,
   IClientRoomData,
   IClientShipDataset,
   IClientUserData,
+  IServerAttackResultData,
   IServerGameData,
+  IServerTurnData,
   IServerUserData,
   IServerUserShipsDataset,
   MessagePayload,
@@ -124,6 +128,53 @@ export default class AppController {
     );
 
     this.sendMessagesToRoomGamePlayers(player1Payload, player2Payload, roomId);
+  }
+
+  public attack(data: IClientAttackData) {
+    if (
+      data.indexPlayer !==
+      this.roomController.getRoomGameCurrentPlayerId(data.gameId)
+    ) {
+      return;
+    }
+
+    const attackResult = this.roomController.gameAttack(data);
+
+    if (attackResult === AttackResult.Error) {
+      return;
+    }
+
+    const playersAttackMessagePayloadData: IServerAttackResultData = {
+      position: { x: data.x, y: data.y },
+      currentPlayer: data.indexPlayer,
+      status: attackResult,
+    };
+    const playersAttackPayload = createMessagePayload(
+      Actions.Attack,
+      playersAttackMessagePayloadData
+    );
+
+    const playersTurnMessagePayloadData: IServerTurnData = {
+      currentPlayer: this.roomController.getRoomGameCurrentPlayerId(
+        data.gameId
+      ),
+    };
+    const playersTurnPayload = createMessagePayload(
+      Actions.Turn,
+      playersTurnMessagePayloadData
+    );
+
+    this.sendMessagesToRoomGamePlayers(
+      playersAttackPayload,
+      playersAttackPayload,
+      data.gameId
+    );
+
+    this.sendMessagesToRoomGamePlayers(
+      playersTurnPayload,
+      playersTurnPayload,
+      data.gameId
+    );
   }
 
   public updateRooms() {

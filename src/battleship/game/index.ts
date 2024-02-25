@@ -1,4 +1,4 @@
-import { IGame, IShipData, IUser } from '../types';
+import { AttackResult, IGame, IShipData, IUser } from '../types';
 import { IGameBoard } from './types';
 import GameBoard from './models/GameBoard';
 import { GameUserNotFoundError } from '../models/errors';
@@ -23,15 +23,15 @@ export default class Game implements IGame {
     return { player1, player2 };
   }
 
-  public getPlayerShipsDataset(playerId: number) {
-    const playerGameBoard = this.getGameBoardByPlayerId(playerId);
+  public getPlayerGameBoard(playerId: number) {
+    this.validatePlayerId(playerId);
 
-    return playerGameBoard.shipDataset;
+    return this.gameBoardsByUserId[String(playerId)];
   }
 
   public addShips(shipDataset: IShipData[], playerId: number) {
-    const playerGameBoard = this.getGameBoardByPlayerId(playerId);
-    const opponentGameBoard = this.getGameBoardByPlayerId(
+    const playerGameBoard = this.getPlayerGameBoard(playerId);
+    const opponentGameBoard = this.getPlayerGameBoard(
       this.getOpponentIdByPlayerId(playerId)
     );
 
@@ -43,10 +43,24 @@ export default class Game implements IGame {
     );
   }
 
-  private getGameBoardByPlayerId(playerId: number) {
-    this.validatePlayerId(playerId);
+  public attack(attackerId: number, x: number, y: number) {
+    const defenderId = this.getOpponentIdByPlayerId(attackerId);
+    const defenderGameBoard = this.getPlayerGameBoard(defenderId);
+    const attackResult = defenderGameBoard.attack(x, y);
 
-    return this.gameBoardsByUserId[String(playerId)];
+    if (attackResult === AttackResult.Miss) {
+      this.toggleCurrentPlayer();
+    }
+
+    return attackResult;
+  }
+
+  private toggleCurrentPlayer() {
+    if (this.currentPlayerId === this.player1.id) {
+      this.currentPlayerId = this.player2.id;
+    } else if (this.currentPlayerId === this.player2.id) {
+      this.currentPlayerId = this.player1.id;
+    }
   }
 
   private getOpponentIdByPlayerId(userId: number) {

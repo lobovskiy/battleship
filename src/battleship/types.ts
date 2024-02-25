@@ -1,4 +1,5 @@
 import { IWsMessage } from '../types';
+import { IGameBoard } from './game/types';
 
 export enum Actions {
   RegisterUser = 'reg',
@@ -9,7 +10,26 @@ export enum Actions {
   CreateGame = 'create_game',
   AddShips = 'add_ships',
   StartGame = 'start_game',
+  Attack = 'attack',
+  Turn = 'turn',
   ServerError = 'server_error',
+}
+
+export interface IShipData {
+  position: {
+    x: number;
+    y: number;
+  };
+  direction: boolean;
+  type: 'small' | 'medium' | 'large' | 'huge';
+  length: number;
+}
+
+export enum AttackResult {
+  Miss = 'miss',
+  Killed = 'killed',
+  Shot = 'shot',
+  Error = 'error',
 }
 
 export type TIndex = number;
@@ -23,19 +43,16 @@ export interface IClientRoomData {
   indexRoom: TIndex;
 }
 
-export interface IShipData {
-  position: {
-    x: number;
-    y: number;
-  };
-  direction: boolean;
-  type: 'small' | 'medium' | 'large' | 'huge';
-  length: number;
-}
-
 export interface IClientShipDataset {
   gameId: number;
   ships: IShipData[];
+}
+
+export interface IClientAttackData {
+  gameId: TIndex;
+  indexPlayer: TIndex;
+  x: number;
+  y: number;
 }
 
 export type ClientMessageDataByAction = {
@@ -43,6 +60,7 @@ export type ClientMessageDataByAction = {
   [Actions.CreateRoom]: null;
   [Actions.AddUserToRoom]: IClientRoomData;
   [Actions.AddShips]: IClientShipDataset;
+  [Actions.Attack]: IClientAttackData;
 };
 
 export interface IServerErrorData {
@@ -63,6 +81,19 @@ export interface IServerGameData {
 export interface IServerUserShipsDataset {
   ships: IShipData[];
   currentPlayerIndex: TIndex;
+}
+
+export interface IServerAttackResultData {
+  position: {
+    x: number;
+    y: number;
+  };
+  currentPlayer: TIndex;
+  status: AttackResult;
+}
+
+export interface IServerTurnData {
+  currentPlayer: TIndex;
 }
 
 export type MessagePayload = Omit<IWsMessage<Actions>, 'id'>;
@@ -87,6 +118,7 @@ export interface IRoom {
 export interface IGame {
   currentPlayerId: TIndex;
   getPlayers: () => { player1: IUser; player2: IUser };
-  getPlayerShipsDataset: (playerId: number) => IShipData[];
+  getPlayerGameBoard: (playerId: number) => IGameBoard;
   addShips: (shipDataset: IShipData[], userId: number) => boolean;
+  attack: (attackerId: number, x: number, y: number) => AttackResult;
 }
