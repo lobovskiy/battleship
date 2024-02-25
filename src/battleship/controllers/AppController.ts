@@ -7,7 +7,7 @@ import {
   sendServerMessage,
 } from '../utils';
 import { IAppWsServer, IWsConnection } from '../../types';
-import { Actions, IClientUserData, MessagePayload } from '../types';
+import { Actions, IClientUserData } from '../types';
 
 export default class AppController {
   private userController: UserController;
@@ -25,12 +25,18 @@ export default class AppController {
       data.password,
       wsConnection.id
     );
-    const payload: MessagePayload = createMessagePayload(Actions.RegisterUser, {
+    const payload = createMessagePayload(Actions.RegisterUser, {
       name: user.name,
       index: user.id,
     });
 
     sendServerMessage(payload, wsConnection);
+  }
+
+  public createRoom(wsConnection: IWsConnection) {
+    const user = this.userController.findUserByConnectionId(wsConnection.id);
+
+    this.roomController.addRoom(user);
   }
 
   public updateRooms() {

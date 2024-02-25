@@ -32,6 +32,11 @@ export class Battleship implements IWsApp {
           this.controller.updateWinners();
 
           break;
+        case Actions.CreateRoom:
+          this.controller.createRoom(wsConnection);
+          this.controller.updateRooms();
+
+          break;
 
         default:
           handleError(new ServerError('Unsupported action'), wsConnection);

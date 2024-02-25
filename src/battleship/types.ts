@@ -4,8 +4,11 @@ export enum Actions {
   RegisterUser = 'reg',
   UpdateRooms = 'update_room',
   UpdateWinners = 'update_winners',
+  CreateRoom = 'create_room',
   ServerError = 'server_error',
 }
+
+export type TIndex = number;
 
 export interface IClientUserData {
   name: string;
@@ -14,6 +17,7 @@ export interface IClientUserData {
 
 export type ClientMessageDataByAction = {
   [Actions.RegisterUser]: IClientUserData;
+  [Actions.CreateRoom]: null;
 };
 
 export interface IServerErrorData {
@@ -24,13 +28,14 @@ export interface IServerErrorData {
 export type MessagePayload = Omit<IWsMessage<Actions>, 'id'>;
 
 export interface IUser {
-  id: number;
+  id: TIndex;
   name: string;
+  password: string;
   connectionId: string;
   wins: number;
 }
 
 export interface IRoom {
-  id: number;
-  users: IUser[];
+  id: TIndex;
+  getUsers: () => { name: string; index: number }[];
 }

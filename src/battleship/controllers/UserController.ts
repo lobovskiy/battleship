@@ -1,7 +1,8 @@
 import User from '../models/User';
+import { IUser } from '../types';
 
 export default class UserController {
-  private users: User[] = [];
+  private users: IUser[] = [];
 
   private lastId = 1;
 
@@ -9,7 +10,7 @@ export default class UserController {
     return (
       this.users.find(
         (user) => user.name === name && user.password === password
-      ) || this.createNewUser(name, password, connectionId)
+      ) || this.addUser(name, password, connectionId)
     );
   }
 
@@ -20,12 +21,16 @@ export default class UserController {
     }));
   }
 
-  private createNewUser(name: string, password: string, connectionId: string) {
+  public findUserByConnectionId(connectionId: string): IUser | undefined {
+    return this.users.find((user) => user.connectionId === connectionId);
+  }
+
+  private addUser(name: string, password: string, connectionId: string): IUser {
     const id = this.lastId++;
-    const newUser = new User(id, name, password, connectionId);
+    const user = new User(id, name, password, connectionId);
 
-    this.users.push(newUser);
+    this.users.push(user);
 
-    return newUser;
+    return user;
   }
 }

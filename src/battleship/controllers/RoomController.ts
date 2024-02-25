@@ -1,4 +1,5 @@
-import { IRoom } from '../types';
+import { IRoom, IUser } from '../types';
+import { Room } from '../models/Room';
 
 export default class RoomController {
   private rooms: IRoom[] = [];
@@ -6,16 +7,18 @@ export default class RoomController {
   private lastId = 1;
 
   public getRooms() {
-    return this.rooms.map((room) => {
-      const roomUsers = room.users.map((user) => ({
-        name: user.name,
-        index: user.id,
-      }));
+    return this.rooms.map((room) => ({
+      roomId: room.id,
+      roomUsers: room.getUsers(),
+    }));
+  }
 
-      return {
-        roomId: room.id,
-        roomUsers,
-      };
-    });
+  public addRoom(user?: IUser): IRoom {
+    const id = this.lastId++;
+    const room = new Room(id, user);
+
+    this.rooms.push(room);
+
+    return room;
   }
 }

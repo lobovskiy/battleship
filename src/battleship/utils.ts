@@ -12,7 +12,7 @@ export function parseWsMessageData(
   data: WebSocket.RawData
 ): AppWsMessage<ClientMessageDataByAction> {
   const message = JSON.parse(data.toString()) as IWsMessage<Actions>;
-  const messageData = message.data.length ? JSON.parse(message.data) : {};
+  const messageData = message.data.length ? JSON.parse(message.data) : null;
 
   console.log('message received:');
   console.log('action: ', message.type);
