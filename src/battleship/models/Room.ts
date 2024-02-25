@@ -1,4 +1,5 @@
-import { IRoom, IUser } from '../types';
+import { IRoom, IServerUserData, IUser } from '../types';
+import { RoomUserQtyError } from './errors';
 
 export class Room implements IRoom {
   private users: IUser[] = [];
@@ -8,14 +9,26 @@ export class Room implements IRoom {
     user?: IUser
   ) {
     if (user) {
-      this.users.push(user);
+      this.addUser(user);
     }
   }
 
-  public getUsers() {
+  public getUsers(): IServerUserData[] {
     return this.users.map((user) => ({
       name: user.name,
       index: user.id,
     }));
+  }
+
+  public addUser(user: IUser): IServerUserData[] {
+    if (this.users.length >= 2) {
+      throw new RoomUserQtyError();
+    }
+
+    if (!this.users.some((roomUser) => roomUser === user)) {
+      this.users.push(user);
+    }
+
+    return this.getUsers();
   }
 }

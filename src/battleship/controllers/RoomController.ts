@@ -1,5 +1,6 @@
 import { IRoom, IUser } from '../types';
 import { Room } from '../models/Room';
+import { RoomNotFoundError } from '../models/errors';
 
 export default class RoomController {
   private rooms: IRoom[] = [];
@@ -20,5 +21,15 @@ export default class RoomController {
     this.rooms.push(room);
 
     return room;
+  }
+
+  public addUserToRoom(user: IUser, roomId: number) {
+    const room = this.rooms.find((room) => room.id === roomId);
+
+    if (!room) {
+      throw new RoomNotFoundError();
+    }
+
+    return room.addUser(user);
   }
 }

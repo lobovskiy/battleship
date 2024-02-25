@@ -11,6 +11,24 @@ export class BattleshipError extends Error {
   }
 }
 
+export class UserNotFoundError extends BattleshipError {
+  constructor() {
+    super(Actions.ServerError, 'User not found');
+  }
+}
+
+export class RoomNotFoundError extends BattleshipError {
+  constructor() {
+    super(Actions.ServerError, 'Room not found');
+  }
+}
+
+export class RoomUserQtyError extends BattleshipError {
+  constructor() {
+    super(Actions.ServerError, 'Cannot add more than 2 users in a room');
+  }
+}
+
 export class ServerError extends BattleshipError {
   constructor(message?: string) {
     super(Actions.ServerError, message);

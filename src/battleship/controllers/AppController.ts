@@ -7,7 +7,8 @@ import {
   sendServerMessage,
 } from '../utils';
 import { IAppWsServer, IWsConnection } from '../../types';
-import { Actions, IClientUserData } from '../types';
+import { Actions, IClientRoomData, IClientUserData } from '../types';
+import { UserNotFoundError } from '../models/errors';
 
 export default class AppController {
   private userController: UserController;
@@ -37,6 +38,16 @@ export default class AppController {
     const user = this.userController.findUserByConnectionId(wsConnection.id);
 
     this.roomController.addRoom(user);
+  }
+
+  public addUserToRoom(data: IClientRoomData, wsConnection: IWsConnection) {
+    const user = this.userController.findUserByConnectionId(wsConnection.id);
+
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    return this.roomController.addUserToRoom(user, data.indexRoom);
   }
 
   public updateRooms() {

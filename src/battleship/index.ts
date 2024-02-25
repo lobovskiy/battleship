@@ -37,6 +37,16 @@ export class Battleship implements IWsApp {
           this.controller.updateRooms();
 
           break;
+        case Actions.AddUserToRoom:
+          const roomUsers = this.controller.addUserToRoom(
+            messageData,
+            wsConnection
+          );
+          this.controller.updateRooms();
+
+          console.log(roomUsers.length);
+
+          break;
 
         default:
           handleError(new ServerError('Unsupported action'), wsConnection);
