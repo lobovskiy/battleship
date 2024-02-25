@@ -6,11 +6,14 @@ import { IAppWsServer, IWsConnection } from '../../types';
 import { Actions, IClientUserData, MessagePayload } from '../types';
 
 export default class AppController {
-  constructor(
-    private userController: UserController,
-    private roomController: RoomController,
-    private wsServer: IAppWsServer
-  ) {}
+  private userController: UserController;
+
+  private roomController: RoomController;
+
+  constructor(private wsServer: IAppWsServer) {
+    this.userController = new UserController();
+    this.roomController = new RoomController();
+  }
 
   public registerUser(data: IClientUserData, wsConnection: IWsConnection) {
     const user = this.userController.registerUser(

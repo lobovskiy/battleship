@@ -1,8 +1,6 @@
 import WebSocket from 'ws';
 import { ServerError } from './models/errors';
 import AppController from './controllers/AppController';
-import UserController from './controllers/UserController';
-import RoomController from './controllers/RoomController';
 import { handleError, parseWsMessageData } from './utils';
 import { IAppWsServer, IWsApp, IWsConnection } from '../types';
 import { Actions } from './types';
@@ -11,14 +9,7 @@ export class Battleship implements IWsApp {
   private controller: AppController;
 
   constructor(public wsServer: IAppWsServer) {
-    const userController = new UserController();
-    const roomController = new RoomController();
-
-    this.controller = new AppController(
-      userController,
-      roomController,
-      wsServer
-    );
+    this.controller = new AppController(wsServer);
   }
 
   listen() {
