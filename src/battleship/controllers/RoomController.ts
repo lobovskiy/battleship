@@ -8,10 +8,12 @@ export default class RoomController {
   private lastId = 1;
 
   public getRooms() {
-    return this.rooms.map((room) => ({
-      roomId: room.id,
-      roomUsers: room.getUsers(),
-    }));
+    return this.rooms
+      .map((room) => ({
+        roomId: room.id,
+        roomUsers: room.getUsers(),
+      }))
+      .filter((roomData) => roomData.roomUsers.length < 2);
   }
 
   public addNewRoom(user: IUser): IRoom {
