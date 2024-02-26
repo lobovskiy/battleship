@@ -1,6 +1,6 @@
 import Ship from './Ship';
 import { createCellMatrix } from '../utils';
-import { AttackResult, IShipData } from '../../types';
+import { AttackResult, IGameFieldCoords, IShipData } from '../../types';
 import { Cell, IGameBoard, IShip } from '../types';
 
 export default class GameBoard implements IGameBoard {
@@ -43,5 +43,25 @@ export default class GameBoard implements IGameBoard {
     this.field[x][y] = Cell.Beaten;
 
     return attackResult;
+  }
+
+  public getRandomAttackCoords() {
+    const coords: IGameFieldCoords[] = [];
+
+    for (let y = 0; y < this.field.length; y++) {
+      for (let x = 0; x < this.field.length; x++) {
+        if (this.field[x][y] === Cell.Clear) {
+          coords.push({ x, y });
+        }
+      }
+    }
+
+    if (!coords.length) {
+      return null;
+    }
+
+    const randomCoordsIndex = Math.floor(Math.random() * (coords.length + 1));
+
+    return coords[randomCoordsIndex];
   }
 }

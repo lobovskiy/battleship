@@ -12,14 +12,17 @@ export enum Actions {
   StartGame = 'start_game',
   Attack = 'attack',
   Turn = 'turn',
+  RandomAttack = 'randomAttack',
   ServerError = 'server_error',
 }
 
+export interface IGameFieldCoords {
+  x: number;
+  y: number;
+}
+
 export interface IShipData {
-  position: {
-    x: number;
-    y: number;
-  };
+  position: IGameFieldCoords;
   direction: boolean;
   type: 'small' | 'medium' | 'large' | 'huge';
   length: number;
@@ -55,12 +58,18 @@ export interface IClientAttackData {
   y: number;
 }
 
+export interface IClientRandomAttackData {
+  gameId: TIndex;
+  indexPlayer: TIndex;
+}
+
 export type ClientMessageDataByAction = {
   [Actions.RegisterUser]: IClientUserData;
   [Actions.CreateRoom]: null;
   [Actions.AddUserToRoom]: IClientRoomData;
   [Actions.AddShips]: IClientShipDataset;
   [Actions.Attack]: IClientAttackData;
+  [Actions.RandomAttack]: IClientRandomAttackData;
 };
 
 export interface IServerErrorData {
@@ -84,10 +93,7 @@ export interface IServerUserShipsDataset {
 }
 
 export interface IServerAttackResultData {
-  position: {
-    x: number;
-    y: number;
-  };
+  position: IGameFieldCoords;
   currentPlayer: TIndex;
   status: AttackResult;
 }
@@ -120,5 +126,6 @@ export interface IGame {
   getPlayers: () => { player1: IUser; player2: IUser };
   getPlayerGameBoard: (playerId: number) => IGameBoard;
   addShips: (shipDataset: IShipData[], userId: number) => boolean;
-  attack: (attackerId: number, x: number, y: number) => AttackResult;
+  attack: (x: number, y: number) => AttackResult;
+  getRandomAttackCoords: () => IGameFieldCoords | null;
 }

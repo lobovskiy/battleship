@@ -11,6 +11,7 @@ import {
   Actions,
   AttackResult,
   IClientAttackData,
+  IClientRandomAttackData,
   IClientRoomData,
   IClientShipDataset,
   IClientUserData,
@@ -66,7 +67,7 @@ export default class AppController {
     return this.roomController.addUserToRoom(user, data.indexRoom);
   }
 
-  public createGame(roomId: number, wsConnection: IWsConnection) {
+  public createGame(roomId: number) {
     this.roomController.createGame(roomId);
 
     const { player1, player2 } = this.roomController.getRoomGamePlayers(roomId);
@@ -179,6 +180,17 @@ export default class AppController {
       playersTurnPayload,
       data.gameId
     );
+  }
+
+  public randomAttack(data: IClientRandomAttackData) {
+    const randomAttackCoords =
+      this.roomController.getRoomGameRandomAttackCoords(data.gameId);
+
+    if (!randomAttackCoords) {
+      return;
+    }
+
+    this.attack({ ...data, x: randomAttackCoords.x, y: randomAttackCoords.y });
   }
 
   public updateRooms() {

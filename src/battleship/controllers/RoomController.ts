@@ -65,10 +65,16 @@ export default class RoomController {
   }
 
   public gameAttack(data: IClientAttackData) {
-    const { gameId, indexPlayer, x, y } = data;
+    const { gameId, x, y } = data;
     const game = this.getRoomGameByRoomId(gameId);
 
-    return game.attack(indexPlayer, x, y);
+    return game.attack(x, y);
+  }
+
+  public getRoomGameRandomAttackCoords(roomId: number) {
+    const game = this.getRoomGameByRoomId(roomId);
+
+    return game.getRandomAttackCoords();
   }
 
   private getRoomById(id: number) {

@@ -1,8 +1,8 @@
-import { AttackResult, IShipData } from '../../types';
-import { IShip, ShipCoords } from '../types';
+import { AttackResult, IGameFieldCoords, IShipData } from '../../types';
+import { IShip } from '../types';
 
 export default class Ship implements IShip {
-  position: ShipCoords[] = [];
+  position: IGameFieldCoords[] = [];
 
   hits: number = 0;
 

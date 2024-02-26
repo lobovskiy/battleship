@@ -45,7 +45,7 @@ export class Battleship implements IWsApp {
           this.controller.updateRooms();
 
           if (roomUsers.length === 2) {
-            this.controller.createGame(messageData.indexRoom, wsConnection);
+            this.controller.createGame(messageData.indexRoom);
           }
 
           break;
@@ -62,6 +62,10 @@ export class Battleship implements IWsApp {
           break;
         case Actions.Attack:
           this.controller.attack(messageData);
+
+          break;
+        case Actions.RandomAttack:
+          this.controller.randomAttack(messageData);
 
           break;
 

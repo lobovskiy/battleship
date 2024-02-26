@@ -43,8 +43,8 @@ export default class Game implements IGame {
     );
   }
 
-  public attack(attackerId: number, x: number, y: number) {
-    const defenderId = this.getOpponentIdByPlayerId(attackerId);
+  public attack(x: number, y: number) {
+    const defenderId = this.getOpponentIdByPlayerId(this.currentPlayerId);
     const defenderGameBoard = this.getPlayerGameBoard(defenderId);
     const attackResult = defenderGameBoard.attack(x, y);
 
@@ -53,6 +53,13 @@ export default class Game implements IGame {
     }
 
     return attackResult;
+  }
+
+  public getRandomAttackCoords() {
+    const defenderId = this.getOpponentIdByPlayerId(this.currentPlayerId);
+    const defenderGameBoard = this.getPlayerGameBoard(defenderId);
+
+    return defenderGameBoard.getRandomAttackCoords();
   }
 
   private toggleCurrentPlayer() {
