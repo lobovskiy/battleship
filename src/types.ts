@@ -8,6 +8,7 @@ export interface IWsConnection {
 export interface IAppWsServer extends WebSocketServer {
   createWsConnection: (ws: WebSocket) => IWsConnection;
   findWsConnectionById: (id: string) => IWsConnection | undefined;
+  removeConnection: (id: string) => void;
 }
 
 export interface IWsApp {

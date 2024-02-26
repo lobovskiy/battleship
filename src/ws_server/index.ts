@@ -20,4 +20,10 @@ export class AppWsServer extends WebSocketServer implements IAppWsServer {
   public findWsConnectionById(id: string) {
     return this.wsConnections.find((wsConnection) => wsConnection.id === id);
   }
+
+  public removeConnection(id: string) {
+    this.wsConnections = this.wsConnections.filter(
+      (wsConnection) => wsConnection.id !== id
+    );
+  }
 }

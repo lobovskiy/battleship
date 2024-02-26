@@ -33,10 +33,14 @@ export default class AppController {
   }
 
   public registerUser(data: IClientUserData, wsConnection: IWsConnection) {
+    const onUserExists = (oldConnectionId: string) => {
+      this.wsServer.removeConnection(oldConnectionId);
+    };
     const user = this.userController.registerUser(
       data.name,
       data.password,
-      wsConnection.id
+      wsConnection.id,
+      onUserExists.bind(this)
     );
     const messagePayloadData: IServerUserData = {
       name: user.name,

@@ -7,12 +7,24 @@ export default class UserController {
 
   private lastId = 1;
 
-  public registerUser(name: string, password: string, connectionId: string) {
-    return (
-      this.users.find(
-        (user) => user.name === name && user.password === password
-      ) || this.addNewUser(name, password, connectionId)
+  public registerUser(
+    name: string,
+    password: string,
+    connectionId: string,
+    onUserExists: (oldConnectionId: string) => void
+  ) {
+    const existingUser = this.users.find(
+      (user) => user.name === name && user.password === password
     );
+
+    if (existingUser) {
+      onUserExists(existingUser.connectionId);
+      existingUser.connectionId = connectionId;
+
+      return existingUser;
+    } else {
+      return this.addNewUser(name, password, connectionId);
+    }
   }
 
   public getWinners() {
