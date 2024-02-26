@@ -28,10 +28,16 @@ export default class UserController {
   }
 
   public getWinners() {
-    return this.users.map((user) => ({
-      name: user.name,
-      wins: user.wins,
-    }));
+    return this.users
+      .filter((user) => !user.bot)
+      .map((user) => ({
+        name: user.name,
+        wins: user.wins,
+      }));
+  }
+
+  public findUserById(id: number) {
+    return this.users.find((user) => user.id === id);
   }
 
   public getUserByConnectionId(connectionId: string) {
@@ -44,13 +50,23 @@ export default class UserController {
     return user;
   }
 
+  public createBot() {
+    return this.addNewUser(
+      `Bot ${this.lastId}`,
+      `Bot ${this.lastId}`,
+      '',
+      true
+    );
+  }
+
   private addNewUser(
     name: string,
     password: string,
-    connectionId: string
+    connectionId: string,
+    bot: boolean = false
   ): IUser {
     const id = this.lastId++;
-    const user = new User(id, name, password, connectionId);
+    const user = new User(id, name, password, connectionId, bot);
 
     this.users.push(user);
 

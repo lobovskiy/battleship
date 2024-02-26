@@ -2,6 +2,7 @@ import { AttackResult, IGame, IShipData, IUser } from '../types';
 import { IGameBoard } from './types';
 import GameBoard from './models/GameBoard';
 import { GameUserNotFoundError } from '../models/errors';
+import getGridWithRandomShips from './utils/generateRandomShipsDataset';
 
 export default class Game implements IGame {
   private gameBoardsByUserId: Record<string, IGameBoard> = {};
@@ -43,6 +44,13 @@ export default class Game implements IGame {
       !!playerGameBoard.shipDataset.length &&
       !!opponentGameBoard.shipDataset.length
     );
+  }
+
+  public addShipsToBot(botUserId: number) {
+    const botGameBoard = this.getPlayerGameBoard(botUserId);
+    const { ships } = getGridWithRandomShips();
+
+    botGameBoard.addShips(ships);
   }
 
   public attack(x: number, y: number) {

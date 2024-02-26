@@ -74,6 +74,10 @@ export class Battleship implements IWsApp {
           this.controller.randomAttack(messageData);
 
           break;
+        case Actions.SinglePlay:
+          this.controller.startSinglePlay(wsConnection);
+
+          break;
 
         default:
           handleError(new ServerError('Unsupported action'), wsConnection);

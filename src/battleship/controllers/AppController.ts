@@ -60,7 +60,7 @@ export default class AppController {
   public createRoom(wsConnection: IWsConnection) {
     const user = this.userController.getUserByConnectionId(wsConnection.id);
 
-    this.roomController.addNewRoom(user);
+    return this.roomController.addNewRoom(user);
   }
 
   public addUserToRoom(data: IClientRoomData, wsConnection: IWsConnection) {
@@ -168,8 +168,9 @@ export default class AppController {
       playersAttackMessagePayloadData
     );
 
+    const nextPlayerId = this.roomController.getRoomGameCurrentPlayerId(gameId);
     const playersTurnMessagePayloadData: IServerTurnData = {
-      currentPlayer: this.roomController.getRoomGameCurrentPlayerId(gameId),
+      currentPlayer: nextPlayerId,
     };
     const playersTurnPayload = createMessagePayload(
       Actions.Turn,
@@ -187,6 +188,13 @@ export default class AppController {
       playersTurnPayload,
       gameId
     );
+
+    const nextPlayer = this.userController.findUserById(nextPlayerId);
+    if (nextPlayer && nextPlayer.bot) {
+      setTimeout(() => {
+        this.randomAttack({ gameId, indexPlayer: nextPlayerId });
+      }, 2000);
+    }
   }
 
   public randomAttack(data: IClientRandomAttackData) {
@@ -198,6 +206,28 @@ export default class AppController {
     }
 
     this.attack({ ...data, x: randomAttackCoords.x, y: randomAttackCoords.y });
+  }
+
+  public startSinglePlay(wsConnection: IWsConnection) {
+    const user = this.userController.getUserByConnectionId(wsConnection.id);
+    const room = this.createRoom(wsConnection);
+    const bot = this.userController.createBot();
+    this.roomController.addUserToRoom(bot, room.id);
+
+    this.roomController.createGame(room.id);
+    this.roomController.addShipsToBot(room.id, bot.id);
+
+    const messagePayloadData: IServerGameData = {
+      idGame: room.id,
+      idPlayer: user.id,
+    };
+
+    const payload = createMessagePayload(
+      Actions.CreateGame,
+      messagePayloadData
+    );
+
+    sendServerMessage(payload, wsConnection);
   }
 
   public updateRooms() {

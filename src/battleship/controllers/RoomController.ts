@@ -47,6 +47,12 @@ export default class RoomController {
     return room.addUserShips(shipDataset, userId);
   }
 
+  public addShipsToBot(roomId: number, botUserId: number) {
+    const room = this.getRoomById(roomId);
+
+    return room.addUserShipsToBot(botUserId);
+  }
+
   public getRoomGameCurrentPlayerId(roomId: number) {
     const game = this.getRoomGameByRoomId(roomId);
 

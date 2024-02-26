@@ -15,6 +15,7 @@ export enum Actions {
   RandomAttack = 'randomAttack',
   Finish = 'finish',
   Disconnect = 'diconnect',
+  SinglePlay = 'single_play',
   ServerError = 'server_error',
 }
 
@@ -72,6 +73,7 @@ export type ClientMessageDataByAction = {
   [Actions.AddShips]: IClientShipDataset;
   [Actions.Attack]: IClientAttackData;
   [Actions.RandomAttack]: IClientRandomAttackData;
+  [Actions.SinglePlay]: null;
 };
 
 export interface IServerErrorData {
@@ -116,6 +118,7 @@ export interface IUser {
   password: string;
   connectionId: string;
   wins: number;
+  bot?: boolean;
 }
 
 export interface IRoom {
@@ -125,6 +128,7 @@ export interface IRoom {
   addUser: (user: IUser) => IServerUserData[];
   initGame: () => void;
   addUserShips: (shipDataset: IShipData[], userId: number) => boolean;
+  addUserShipsToBot: (botUserId: number) => void;
   findUserByConnectionId: (connectionId: string) => IUser | undefined;
 }
 
@@ -134,6 +138,7 @@ export interface IGame {
   getPlayers: () => { player1: IUser; player2: IUser };
   getPlayerGameBoard: (playerId: number) => IGameBoard;
   addShips: (shipDataset: IShipData[], userId: number) => boolean;
+  addShipsToBot: (botUserId: number) => void;
   attack: (x: number, y: number) => AttackResult;
   getRandomAttackCoords: () => IGameFieldCoords | null;
   isGameOver: () => boolean;
