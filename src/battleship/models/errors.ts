@@ -44,9 +44,9 @@ export class GameNotFoundError extends BattleshipError {
   }
 }
 
-export class GameBoardNotFoundError extends BattleshipError {
+export class GameWinnerNotFound extends BattleshipError {
   constructor() {
-    super(Actions.ServerError, "Current user's game board not found");
+    super(Actions.ServerError, "Current game's winner not found");
   }
 }
 

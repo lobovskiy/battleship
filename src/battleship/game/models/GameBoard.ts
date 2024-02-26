@@ -64,4 +64,8 @@ export default class GameBoard implements IGameBoard {
 
     return coords[randomCoordsIndex];
   }
+
+  public isGameOver() {
+    return this.shipsHit === this.ships.length;
+  }
 }

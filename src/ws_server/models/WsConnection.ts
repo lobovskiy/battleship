@@ -5,7 +5,7 @@ import { IWsConnection } from '../../types';
 export class WsConnection implements IWsConnection {
   public id: string = randomUUID();
 
-  constructor(private ws: WebSocket) {}
+  constructor(public ws: WebSocket) {}
 
   public send(data: string) {
     this.ws.send(data);

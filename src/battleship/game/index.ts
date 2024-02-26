@@ -8,6 +8,8 @@ export default class Game implements IGame {
 
   public currentPlayerId: number;
 
+  public winnerId: number | undefined;
+
   constructor(
     private player1: IUser,
     private player2: IUser
@@ -62,6 +64,20 @@ export default class Game implements IGame {
     return defenderGameBoard.getRandomAttackCoords();
   }
 
+  public isGameOver() {
+    for (const [playerId, gameBoard] of Object.entries(
+      this.gameBoardsByUserId
+    )) {
+      if (gameBoard.isGameOver()) {
+        this.setWinnerByLoserId(playerId);
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private toggleCurrentPlayer() {
     if (this.currentPlayerId === this.player1.id) {
       this.currentPlayerId = this.player2.id;
@@ -78,6 +94,14 @@ export default class Game implements IGame {
     } else {
       return this.player1.id;
     }
+  }
+
+  private setWinnerByLoserId(loserId: number | string) {
+    const winner =
+      this.player1.id === Number(loserId) ? this.player2 : this.player1;
+
+    winner.wins += 1;
+    this.winnerId = winner.id;
   }
 
   private validatePlayerId(userId: number) {

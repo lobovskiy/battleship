@@ -13,6 +13,7 @@ export enum Actions {
   Attack = 'attack',
   Turn = 'turn',
   RandomAttack = 'randomAttack',
+  Finish = 'finish',
   ServerError = 'server_error',
 }
 
@@ -102,6 +103,10 @@ export interface IServerTurnData {
   currentPlayer: TIndex;
 }
 
+export interface IServerFinishGameData {
+  winPlayer: TIndex;
+}
+
 export type MessagePayload = Omit<IWsMessage<Actions>, 'id'>;
 
 export interface IUser {
@@ -123,9 +128,11 @@ export interface IRoom {
 
 export interface IGame {
   currentPlayerId: TIndex;
+  winnerId: TIndex | undefined;
   getPlayers: () => { player1: IUser; player2: IUser };
   getPlayerGameBoard: (playerId: number) => IGameBoard;
   addShips: (shipDataset: IShipData[], userId: number) => boolean;
   attack: (x: number, y: number) => AttackResult;
   getRandomAttackCoords: () => IGameFieldCoords | null;
+  isGameOver: () => boolean;
 }

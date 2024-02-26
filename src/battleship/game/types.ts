@@ -15,4 +15,5 @@ export interface IGameBoard {
   addShips: (shipDataset: IShipData[]) => void;
   attack: (x: number, y: number) => AttackResult;
   getRandomAttackCoords: () => IGameFieldCoords | null;
+  isGameOver: () => boolean;
 }

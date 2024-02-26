@@ -2,6 +2,7 @@ import WebSocket, { WebSocketServer } from 'ws';
 
 export interface IWsConnection {
   id: string;
+  ws: WebSocket;
   send: (data: string) => void;
 }
 

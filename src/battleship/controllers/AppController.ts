@@ -16,12 +16,14 @@ import {
   IClientShipDataset,
   IClientUserData,
   IServerAttackResultData,
+  IServerFinishGameData,
   IServerGameData,
   IServerTurnData,
   IServerUserData,
   IServerUserShipsDataset,
   MessagePayload,
 } from '../types';
+import { GameWinnerNotFound } from '../models/errors';
 
 export default class AppController {
   private userController: UserController;
@@ -136,9 +138,9 @@ export default class AppController {
   }
 
   public attack(data: IClientAttackData) {
+    const { gameId, indexPlayer, x, y } = data;
     if (
-      data.indexPlayer !==
-      this.roomController.getRoomGameCurrentPlayerId(data.gameId)
+      indexPlayer !== this.roomController.getRoomGameCurrentPlayerId(gameId)
     ) {
       return;
     }
@@ -149,9 +151,16 @@ export default class AppController {
       return;
     }
 
+    if (this.roomController.isRoomGameOver(gameId)) {
+      this.finishGame(gameId);
+      this.roomController.deleteRoom(gameId);
+
+      return;
+    }
+
     const playersAttackMessagePayloadData: IServerAttackResultData = {
-      position: { x: data.x, y: data.y },
-      currentPlayer: data.indexPlayer,
+      position: { x, y },
+      currentPlayer: indexPlayer,
       status: attackResult,
     };
     const playersAttackPayload = createMessagePayload(
@@ -160,9 +169,7 @@ export default class AppController {
     );
 
     const playersTurnMessagePayloadData: IServerTurnData = {
-      currentPlayer: this.roomController.getRoomGameCurrentPlayerId(
-        data.gameId
-      ),
+      currentPlayer: this.roomController.getRoomGameCurrentPlayerId(gameId),
     };
     const playersTurnPayload = createMessagePayload(
       Actions.Turn,
@@ -172,13 +179,13 @@ export default class AppController {
     this.sendMessagesToRoomGamePlayers(
       playersAttackPayload,
       playersAttackPayload,
-      data.gameId
+      gameId
     );
 
     this.sendMessagesToRoomGamePlayers(
       playersTurnPayload,
       playersTurnPayload,
-      data.gameId
+      gameId
     );
   }
 
@@ -211,6 +218,30 @@ export default class AppController {
     this.broadcast(payload);
   }
 
+  private finishGame(roomId: number) {
+    const winPlayer = this.roomController.getRoomGameWinnerId(roomId);
+
+    if (!winPlayer) {
+      throw new GameWinnerNotFound();
+    }
+
+    const playersFinishGameMessagePayloadData: IServerFinishGameData = {
+      winPlayer,
+    };
+    const playersFinishGamePayload = createMessagePayload(
+      Actions.Finish,
+      playersFinishGameMessagePayloadData
+    );
+
+    this.sendMessagesToRoomGamePlayers(
+      playersFinishGamePayload,
+      playersFinishGamePayload,
+      roomId
+    );
+    this.updateRooms();
+    this.updateWinners();
+  }
+
   private sendMessagesToRoomGamePlayers(
     player1Payload: MessagePayload,
     player2Payload: MessagePayload,
@@ -224,11 +255,17 @@ export default class AppController {
       player2.connectionId
     );
 
-    if (player1WsConnection) {
+    if (
+      player1WsConnection &&
+      player1WsConnection.ws.readyState === WebSocket.OPEN
+    ) {
       sendServerMessage(player1Payload, player1WsConnection);
     }
 
-    if (player2WsConnection) {
+    if (
+      player2WsConnection &&
+      player2WsConnection.ws.readyState === WebSocket.OPEN
+    ) {
       sendServerMessage(player2Payload, player2WsConnection);
     }
   }

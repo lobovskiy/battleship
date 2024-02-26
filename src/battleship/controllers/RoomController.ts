@@ -77,6 +77,22 @@ export default class RoomController {
     return game.getRandomAttackCoords();
   }
 
+  public isRoomGameOver(roomId: number) {
+    const game = this.getRoomGameByRoomId(roomId);
+
+    return game.isGameOver();
+  }
+
+  public deleteRoom(roomId: number) {
+    this.rooms = this.rooms.filter((room) => room.id !== roomId);
+  }
+
+  public getRoomGameWinnerId(roomId: number) {
+    const game = this.getRoomGameByRoomId(roomId);
+
+    return game.winnerId;
+  }
+
   private getRoomById(id: number) {
     const room = this.rooms.find((room) => room.id === id);
 
