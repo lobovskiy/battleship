@@ -54,4 +54,8 @@ export class Room implements IRoom {
 
     return this.game.addShips(shipDataset, userId);
   }
+
+  public findUserByConnectionId(connectionId: string) {
+    return this.users.find((user) => user.connectionId === connectionId);
+  }
 }

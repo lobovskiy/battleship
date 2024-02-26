@@ -218,6 +218,48 @@ export default class AppController {
     this.broadcast(payload);
   }
 
+  public closeConnection(connectionId: string) {
+    const disconnectedUserRooms =
+      this.roomController.getRoomsByUserConnectionId(connectionId);
+
+    disconnectedUserRooms.forEach((room) => {
+      const { game } = room;
+
+      if (game) {
+        const gamePlayers = game.getPlayers();
+        const connectedUser = Object.values(gamePlayers).find(
+          (player) => player.connectionId !== connectionId
+        );
+
+        if (connectedUser) {
+          const connectedUserWsConnection = this.wsServer.findWsConnectionById(
+            connectedUser.connectionId
+          );
+
+          if (
+            connectedUserWsConnection &&
+            connectedUserWsConnection.ws.readyState === WebSocket.OPEN
+          ) {
+            const disconnectPayload = createMessagePayload(
+              Actions.Disconnect,
+              {}
+            );
+
+            connectedUser.wins += 1;
+            this.roomController.deleteRoom(room.id);
+
+            sendServerMessage(disconnectPayload, connectedUserWsConnection);
+
+            this.updateRooms();
+            this.updateWinners();
+
+            this.wsServer.removeConnection(connectionId);
+          }
+        }
+      }
+    });
+  }
+
   private finishGame(roomId: number) {
     const winPlayer = this.roomController.getRoomGameWinnerId(roomId);
 

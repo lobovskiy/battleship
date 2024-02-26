@@ -14,6 +14,7 @@ export enum Actions {
   Turn = 'turn',
   RandomAttack = 'randomAttack',
   Finish = 'finish',
+  Disconnect = 'diconnect',
   ServerError = 'server_error',
 }
 
@@ -124,6 +125,7 @@ export interface IRoom {
   addUser: (user: IUser) => IServerUserData[];
   initGame: () => void;
   addUserShips: (shipDataset: IShipData[], userId: number) => boolean;
+  findUserByConnectionId: (connectionId: string) => IUser | undefined;
 }
 
 export interface IGame {

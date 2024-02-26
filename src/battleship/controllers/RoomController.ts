@@ -1,4 +1,4 @@
-import { IClientAttackData, IRoom, IShipData, IUser } from '../types';
+import { IClientAttackData, IGame, IRoom, IShipData, IUser } from '../types';
 import { Room } from '../models/Room';
 import { GameNotFoundError, RoomNotFoundError } from '../models/errors';
 
@@ -93,6 +93,20 @@ export default class RoomController {
     const game = this.getRoomGameByRoomId(roomId);
 
     return game.winnerId;
+  }
+
+  public getRoomsByUserConnectionId(connectionId: string) {
+    const games: IRoom[] = [];
+
+    this.rooms.forEach((room) => {
+      const user = room.findUserByConnectionId(connectionId);
+
+      if (user) {
+        games.push(room);
+      }
+    });
+
+    return games;
   }
 
   private getRoomById(id: number) {

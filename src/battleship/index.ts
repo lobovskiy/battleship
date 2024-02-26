@@ -16,11 +16,17 @@ export class Battleship implements IWsApp {
     this.wsServer.on('connection', (ws) => {
       const wsConnection = this.wsServer.createWsConnection(ws);
 
-      ws.on('message', (data) => this.handleClientMessage(data, wsConnection));
+      ws.on('message', (data) =>
+        this.handleClientMessageData(data, wsConnection)
+      );
+      ws.on('close', () => this.handleCloseConnection(wsConnection.id));
     });
   }
 
-  handleClientMessage(data: WebSocket.RawData, wsConnection: IWsConnection) {
+  handleClientMessageData(
+    data: WebSocket.RawData,
+    wsConnection: IWsConnection
+  ) {
     try {
       const message = parseWsMessageData(data);
       const { type: action, data: messageData } = message;
@@ -75,5 +81,9 @@ export class Battleship implements IWsApp {
     } catch (error) {
       handleError(error, wsConnection);
     }
+  }
+
+  handleCloseConnection(connectionId: string) {
+    this.controller.closeConnection(connectionId);
   }
 }

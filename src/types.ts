@@ -14,10 +14,11 @@ export interface IAppWsServer extends WebSocketServer {
 
 export interface IWsApp {
   listen: () => void;
-  handleClientMessage: (
+  handleClientMessageData: (
     data: WebSocket.RawData,
     wsConnection: IWsConnection
   ) => void;
+  handleCloseConnection: (connectionId: string) => void;
 }
 
 export interface IWsMessage<T> {
